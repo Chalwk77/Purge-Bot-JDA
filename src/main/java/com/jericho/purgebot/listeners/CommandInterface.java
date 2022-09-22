@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface CommandInterface {
 
-    String getName();
+    String getName(); // Get the command name.
 
-    String getDescription();
+    String getDescription(); // Get the command description.
 
-    List<OptionData> getOptions();
+    List<OptionData> getOptions(); // Get the command options.
 
-    void execute(SlashCommandInteractionEvent event);
+    void execute(SlashCommandInteractionEvent event); // Execute the command.
 }

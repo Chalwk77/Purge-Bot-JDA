@@ -21,7 +21,7 @@ import java.io.IOException;
 
 import static com.jericho.purgebot.Utilities.FileIO.loadJSONObject;
 
-public class main {
+public class Main {
 
     public static JSONObject settings;
 
@@ -33,26 +33,38 @@ public class main {
         }
     }
 
+    /**
+     * Custom print method:
+     * Receives a string and prints it to the console.
+     */
     public static void cprint(String message) {
         System.out.println(message);
     }
 
-    // Return the bot token:
+    /**
+     * Returns the bot token from the settings.json file.
+     * @return The bot token.
+     */
     public static String getToken() {
         return String.valueOf(settings.getString("token"));
     }
 
-    public main() throws LoginException {
+    /**
+     * Loads environment variables, builds the shard manager and starts the bot:
+     * @throws LoginException if the bot token is invalid.
+     */
+    public Main() throws LoginException {
+
+        // Get token:
         String token = getToken();
+
+        // Create builder and set status and activity:
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(token);
+
         builder.setStatus(OnlineStatus.ONLINE);
         builder.setActivity(Activity.watching("Your messages..."));
-        builder.enableIntents(
-                GatewayIntent.GUILD_MEMBERS,
-                GatewayIntent.GUILD_MESSAGES,
-                GatewayIntent.GUILD_PRESENCES,
-                GatewayIntent.MESSAGE_CONTENT
-        );
+
+        // Add event listeners:
         ShardManager shardManager = builder.build();
         shardManager.addEventListener(new EventListeners());
 
@@ -63,9 +75,12 @@ public class main {
         shardManager.addEventListener(manager);
     }
 
+    /**
+     * Main method:
+     */
     public static void main(String[] args) {
         try {
-            new main();
+            new Main();
         } catch (LoginException e) {
             cprint("ERROR: Provided bot token is invalid");
         }

@@ -14,25 +14,32 @@ import java.util.List;
 
 public class PurgeHelp implements CommandInterface {
 
+    // Get the command name:
     @Override
     public String getName() {
         return "purgehelp";
     }
 
+    // Get the command description:
     @Override
     public String getDescription() {
         return "Get help with Purge Bot.";
     }
 
+    // Get the command options:
     @Override
     public List<OptionData> getOptions() {
         return new ArrayList<>();
     }
 
-
+    // Execute the command:
     @Override
     public void execute(SlashCommandInteractionEvent event) {
+
+        // Check if the user has the ADMINISTRATOR permission:
         if (Objects.requireNonNull(event.getMember()).hasPermission(Permission.ADMINISTRATOR)) {
+
+            // Create an embed message and send it the admin:
             event.replyEmbeds(new EmbedBuilder()
                     .setTitle("Purge")
                     .setDescription("""

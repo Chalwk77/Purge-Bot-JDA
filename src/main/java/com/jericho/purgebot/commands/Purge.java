@@ -15,25 +15,37 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Purge implements CommandInterface {
 
+    // Get the command name:
     @Override
     public String getName() {
         return "purge";
     }
 
+    // Get the command description:
     @Override
     public String getDescription() {
         return "Purge user messages in a defined time frame.";
     }
 
+    /**
+     * Get the command options:
+     *
+     * @return List of OptionData.
+     * @see OptionData
+     * @see OptionType
+     * @see OptionMapping
+     */
     @Override
     public List<OptionData> getOptions() {
         List<OptionData> data = new ArrayList<>();
 
+        // Add command options:
         OptionData user = new OptionData(OptionType.USER, "user", "The user to purge messages from.", true);
         OptionData time = new OptionData(OptionType.INTEGER, "time", "Time frame", true);
         OptionData flag = new OptionData(OptionType.STRING, "flag", "[-y, -mo, -wk, -d, -hr, -min, -sec]", true);
         OptionData channel = new OptionData(OptionType.CHANNEL, "channel", "Channel ID", false);
 
+        // Set choices for the flag option:
         flag.addChoice("Years", "-y");
         flag.addChoice("Months", "-mo");
         flag.addChoice("Weeks", "-wk");
@@ -42,14 +54,21 @@ public class Purge implements CommandInterface {
         flag.addChoice("Minutes", "-min");
         flag.addChoice("Seconds", "-sec");
 
+        // Add options to the list:
         data.add(user);
         data.add(time);
         data.add(flag);
         data.add(channel);
 
+        // Return the list:
         return data;
     }
 
+    /**
+     * Create a new hash map to store the days in each month:
+     *
+     * @return HashMap of months.
+     */
     private static final Map<Integer, Integer> months = new HashMap<>() {{
         put(1, 31);
         put(2, 28);
@@ -65,10 +84,22 @@ public class Purge implements CommandInterface {
         put(12, 31);
     }};
 
+    /**
+     * Checks if the year is a leap year:
+     * @param year The year to check.
+     * @return True if the year is a leap year, false if not.
+     * @see Purge#months
+     */
     public static boolean leapYear(int year) {
         return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
     }
 
+    /**
+     * Returns the number of days for the current month:
+     * @return months The month to check.
+     * @see Purge#months
+     * @see Purge#leapYear(int)
+     */
     public static int getDaysInMonth() {
         Calendar cal = Calendar.getInstance();
 
@@ -81,10 +112,25 @@ public class Purge implements CommandInterface {
         return months.get(month);
     }
 
+    /**
+     * Execute the command:
+     *
+     * @param event SlashCommandInteractionEvent.
+     * @see SlashCommandInteractionEvent
+     * @see Permission
+     * @see OptionMapping
+     * @see OptionType
+     * @see Calendar
+     * @see AtomicInteger
+     */
     @Override
     public void execute(SlashCommandInteractionEvent event) {
+
+        // Check if the user has the ADMINISTRATOR permission:
         if (Objects.requireNonNull(event.getMember()).hasPermission(Permission.ADMINISTRATOR)) {
 
+
+            // Get command options:
             OptionMapping option_user = event.getOption("user");
             OptionMapping option_time = event.getOption("time");
             OptionMapping option_flag = event.getOption("flag");
@@ -95,10 +141,12 @@ public class Purge implements CommandInterface {
             String flag = option_flag.getAsString();
             String channel = option_channel != null ? option_channel.getAsString() : event.getChannel().getId();
 
+            // Set default channel to the current channel if no channel is specified:
             if (option_channel == null) {
                 channel = event.getChannel().getId();
             }
 
+            // Get time format:
             int time_frame = Integer.parseInt(time);
             switch (flag.toLowerCase()) {
                 case "-y":
@@ -121,11 +169,15 @@ public class Purge implements CommandInterface {
                     break;
             }
 
+            // Get name of user to purge:
             String name = event.getGuild().getMemberById(user).getEffectiveName();
+
             int finalTime_frame = time_frame;
+
             String finalChannel = channel;
             event.getGuild().getTextChannelById(channel).getIterableHistory().takeAsync(100).thenAcceptAsync(messages -> {
 
+                // Create a new AtomicInteger to count the number of messages deleted:
                 AtomicInteger deleted = new AtomicInteger();
                 for (int i = 0; i < messages.size(); i++) {
                     if (messages.get(i).getAuthor().getId().equals(user)) {
@@ -136,6 +188,7 @@ public class Purge implements CommandInterface {
                     }
                 }
 
+                // Inform the admin:
                 if (deleted.get() == 0) {
                     event.reply("No messages were deleted for " + name).setEphemeral(true).queue();
                 } else {

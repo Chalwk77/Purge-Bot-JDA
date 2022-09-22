@@ -2,7 +2,7 @@
 
 package com.jericho.purgebot.listeners;
 
-import com.jericho.purgebot.main;
+import com.jericho.purgebot.Main;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -12,7 +12,7 @@ public class EventListeners extends ListenerAdapter {
 
     @Override
     public void onGuildReady(@Nonnull GuildReadyEvent event) {
-        main.cprint("Guild ready: " + event.getGuild().getName());
-        main.cprint("Bot name: " + event.getJDA().getSelfUser().getName());
+        Main.cprint("Guild ready: " + event.getGuild().getName());
+        Main.cprint("Bot name: " + event.getJDA().getSelfUser().getName());
     }
 }

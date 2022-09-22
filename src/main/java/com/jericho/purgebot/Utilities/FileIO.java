@@ -1,7 +1,9 @@
 // Copyright (c) 2022, Jericho Crosby <jericho.crosby227@gmail.com>
 
 package com.jericho.purgebot.Utilities;
+
 import org.json.JSONObject;
+
 import java.io.*;
 
 public class FileIO {
@@ -10,7 +12,7 @@ public class FileIO {
     private static final String path = "src/main/resources/";
 
     //
-    // Load a JSON Object from file (at the moment this only loads settings.json):
+    // Load a JSON Object from file:
     //
     public static JSONObject loadJSONObject(String file) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(path + file));

@@ -15,6 +15,7 @@ public class CommandManager extends ListenerAdapter {
 
     private final List<CommandInterface> commands = new ArrayList<>();
 
+    // Add a command to the command list:
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         for (Guild guild : event.getJDA().getGuilds()) {
@@ -24,16 +25,22 @@ public class CommandManager extends ListenerAdapter {
         }
     }
 
+    // Command listener:
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         for (CommandInterface command : commands) {
+
+            // Check if the incoming command is in the command list:
             if (event.getName().equals(command.getName())) {
+
+                // Run it:
                 command.execute(event);
                 return;
             }
         }
     }
 
+    // Add abstract interface methods to the command list:
     public void add(CommandInterface command) {
         commands.add(command);
     }
